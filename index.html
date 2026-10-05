@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<title>Buzz: busy bars in West Chester, PA</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#f6f1f4;--card:#fff;--ink:#241433;--mute:#7a6b88;--line:#e6dbe9;--track:#eadff0;--chip:#ece3f1;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a1026;--card:#261838;--ink:#f6eefb;--mute:#a998ba;--line:#37244d;--track:#3a2753;--chip:#33224a}}
+:root[data-theme="dark"]{--bg:#1a1026;--card:#261838;--ink:#f6eefb;--mute:#a998ba;--line:#37244d;--track:#3a2753;--chip:#33224a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"DM Sans",system-ui,sans-serif;line-height:1.4}
+main{max-width:480px;margin:0 auto;padding:20px 16px 40px}
+h1{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:800;font-size:44px;line-height:1;margin:0;letter-spacing:-1px}
+.sub{color:var(--mute);margin:6px 0 16px;font-size:14px}
+.top{display:flex;justify-content:space-between;align-items:flex-end}
+.live{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500;background:none;border:0;color:var(--ink);cursor:pointer;padding:8px 0}
+.sw{width:38px;height:22px;border-radius:11px;background:var(--track);position:relative;transition:background .2s}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s}
+.live[aria-pressed="true"] .sw{background:#e8336d}
+.live[aria-pressed="true"] .sw::after{transform:translateX(16px)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 14px;margin:0 -16px;padding-left:16px;padding-right:16px}
+.chip{flex:none;border:0;background:var(--chip);color:var(--ink);font:500 14px "DM Sans",sans-serif;padding:9px 15px;border-radius:20px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+button:focus-visible{outline:3px solid #e8336d;outline-offset:2px}
+.bar{background:var(--card);border:1px solid var(--line);border-radius:18px;margin-bottom:12px;overflow:hidden}
+.bar>button{all:unset;display:block;width:100%;padding:16px;cursor:pointer;box-sizing:border-box}
+.bar>button:focus-visible{outline:3px solid #e8336d;outline-offset:-3px}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.name{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:600;font-size:20px}
+.meta{color:var(--mute);font-size:13px;white-space:nowrap}
+.heat{display:flex;align-items:center;gap:12px;margin-top:12px}
+.track{flex:1;height:14px;border-radius:7px;background:var(--track);overflow:hidden}
+.fill{height:100%;border-radius:7px;transition:width .6s,background .6s}
+.pct{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:800;font-size:26px;min-width:56px;text-align:right}
+.delta{font-size:13px;margin-top:8px;color:var(--mute)}
+.delta b{color:var(--ink)}
+.more{display:none;padding:0 16px 16px;border-top:1px solid var(--line)}
+.bar.open .more{display:block}
+.cap{font-size:13px;color:var(--mute);margin:14px 0 8px}
+.spark{display:flex;align-items:flex-end;gap:5px;height:64px}
+.spark div{flex:1;border-radius:4px 4px 0 0}
+.lbl{display:flex;gap:5px;font-size:11px;color:var(--mute);margin-top:4px}
+.lbl span{flex:1;text-align:center}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{background:var(--chip);border-radius:12px;padding:5px 11px;font-size:13px}
+.empty{text-align:center;color:var(--mute);padding:40px 0}
+.note{color:var(--mute);font-size:12px;text-align:center;margin-top:20px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.map{width:100%;height:auto;display:block;margin-bottom:14px}.pin{cursor:pointer}.pin:focus-visible{outline:3px solid #e8336d}.pin text{fill:#fff;font:700 11px "DM Sans",sans-serif;pointer-events:none}.lab{font:700 13px "DM Sans",sans-serif;fill:var(--ink);paint-order:stroke;stroke:var(--bg);stroke-width:4px}.dir{display:inline-block;margin-top:14px;font-weight:700;color:var(--ink);background:var(--chip);padding:10px 16px;border-radius:20px;text-decoration:none}
+#map{height:300px;border-radius:18px;z-index:0}.leaflet-container{font-family:"DM Sans",sans-serif}.dot{width:26px;height:26px;border-radius:50%;color:#fff;font:700 12px "DM Sans",sans-serif;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.45)}.dot.sel{transform:scale(1.3)}</style>
+</head>
+<body>
+<main>
+  <h1>Buzz</h1>
+  <p class="sub" id="sub"></p>
+  <div class="chips" id="when" role="group" aria-label="Pick a time"></div>
+  <div id="map" class="map" role="group" aria-label="Map of bars in downtown West Chester"></div>
+  <div class="chips" id="chips" role="group" aria-label="Filter by bar type"></div>
+  <div id="list"></div>
+  <p class="note">Busyness comes from BestTime for the Now view when the server has an API key; otherwise it is simulated. Map data © OpenStreetMap contributors.</p>
+</main>
+<script>
+var D=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+var bars=[],api={},src="simulated";
+var C=[["all","All bars"],["music","Live music"],["cocktail","Cocktails and wine"],["pub","Pubs and taverns"]];
+var T=[["now","Now"],["fri","Fri 10 PM"],["sat","Sat 11 PM"]];
+var filter="all",tw="now",open=null,me={la:39.9601,lo:-75.6048,real:false};
+var LA1=39.964,LO0=-75.6085,K=Math.cos(39.96*Math.PI/180),SC=340/(0.0075*K);
+function px(lo){return (lo-LO0)*K*SC}function py(la){return (LA1-la)*SC}
+function heat(p){return "hsl("+Math.round(230-p*2.3)+" 85% 50%)"}
+function clock(){if(tw==="fri")return{d:4,h:22};if(tw==="sat")return{d:5,h:23};var n=new Date();return{d:(n.getDay()+6)%7,h:n.getHours()}}
+function fmt(t){var h=t.h;return D[t.d]+" "+((h%12)||12)+(h>=12?" PM":" AM")}
+function usual(x,d,h){var o=x.h[d];if(!o||h<o[0]||h>=o[1])return null;var f=[.35,.4,.5,.7,1,1,.6][d];return Math.round(Math.min(100,100*x.p*f*(.25+.9*Math.exp(-Math.pow(h-x.pk,2)/10))))}
+function live(x,d,h){var u=usual(x,d,h);if(u===null)return null;var s=Math.sin(x.id*12.9+d*7.3+h*3.1)*43758.5,n=s-Math.floor(s)-.5;return Math.max(3,Math.min(100,Math.round(u*(1+n*.7))))}
+function val(x,t){var b=live(x,t.d,t.h),u=usual(x,t.d,t.h),a=tw==="now"?api[x.id]:null;
+ if(u!==null&&a){if(a.live!=null)b=Math.round(a.live);else if(a.forecast!=null)b=Math.round(a.forecast);if(a.forecast!=null)u=Math.round(a.forecast)}
+ return{x:x,b:b,u:u}}
+function dist(x){var R=3959,r=Math.PI/180,a=(x.la-me.la)*r,b=(x.lo-me.lo)*r,s=Math.pow(Math.sin(a/2),2)+Math.cos(me.la*r)*Math.cos(x.la*r)*Math.pow(Math.sin(b/2),2);return 2*R*Math.asin(Math.sqrt(s))}
+function hr(h){var a=h%24;return ((a%12)||12)+(a>=12?"p":"a")}
+function spark(x,d,h){var s="",l="";for(var k=17;k<=26;k++){var u=usual(x,d,k),v=u===null?null:(k<=h?live(x,d,k):u);
+ s+='<div style="height:'+(v===null?6:Math.max(6,v*.64))+'px;background:'+(v===null?'var(--track)':heat(v))+';opacity:'+(k>h?.4:1)+(k===h?';outline:2px solid var(--ink)':'')+'"></div>';l+="<span>"+hr(k)+"</span>"}
+ return '<div class="spark">'+s+'</div><div class="lbl">'+l+'</div>'}
+function render(){
+ var raw=clock(),t=raw.h<6?{d:(raw.d+6)%7,h:raw.h+24}:raw;
+ document.getElementById("sub").textContent=fmt(raw)+" · West Chester, PA · distances from "+(me.real?"you":"downtown")+" · "+(tw==="now"&&src==="besttime"?"live data":"simulated busyness");
+ document.getElementById("when").innerHTML=T.map(function(c){return '<button class="chip" data-w="'+c[0]+'" aria-pressed="'+(tw===c[0])+'">'+c[1]+'</button>'}).join("");
+ document.getElementById("chips").innerHTML=C.map(function(c){return '<button class="chip" data-c="'+c[0]+'" aria-pressed="'+(filter===c[0])+'">'+c[1]+'</button>'}).join("");
+ var rows=bars.filter(function(x){return filter==="all"||x.c===filter}).map(function(x){return val(x,t)});
+ rows.sort(function(a,b){return (b.b===null?-1:b.b)-(a.b===null?-1:a.b)});
+ layer.clearLayers();L.circleMarker([me.la,me.lo],{radius:7,color:"#e8336d",fillOpacity:.3}).addTo(layer);
+ rows.forEach(function(r,i){var x=r.x,sel=open===x.id,mk=L.marker([x.la,x.lo],{keyboard:true,title:x.n,icon:L.divIcon({className:"",iconSize:[26,26],html:'<div class="dot'+(sel?' sel':'')+'" style="background:'+(r.b===null?'#7a6b88':heat(r.b))+'">'+(i+1)+'</div>'})}).addTo(layer);
+  mk.on("click",function(){pick({target:{closest:function(q){return q===".pin"?{dataset:{id:x.id}}:null}}})});
+  if(sel)mk.bindTooltip(x.n,{permanent:true,direction:"top",offset:[0,-14]})});
+ document.getElementById("list").innerHTML=rows.map(function(r,i){var x=r.x,mi=dist(x),isOpen=r.b!==null,d=isOpen?Math.round(r.b-r.u):0,
+  txt=!isOpen?"Closed at this time":d>=5?"<b>"+d+" points busier</b> than usual for "+D[t.d]:d<=-5?"<b>"+Math.abs(d)+" points quieter</b> than usual for "+D[t.d]:"About as busy as usual for "+D[t.d];
+  return '<div class="bar'+(open===x.id?' open':'')+'"><button data-id="'+x.id+'" aria-expanded="'+(open===x.id)+'"><div class="row"><span class="name">'+(i+1)+'. '+x.n+'</span><span class="meta">'+mi.toFixed(1)+' mi · '+Math.max(1,Math.round(mi*20))+' min walk</span></div>'+
+  '<div class="meta" style="margin-top:2px">'+x.t+' · '+x.r.toFixed(1)+' stars</div>'+
+  '<div class="heat"><div class="track"><div class="fill" style="width:'+(r.b||0)+'%;background:'+heat(r.b||0)+'"></div></div><span class="pct">'+(isOpen?r.b+'%':'Closed')+'</span></div><div class="delta">'+txt+'</div></button>'+
+  '<div class="more"><p class="cap">'+D[t.d]+', typical shape (estimated)</p>'+spark(x,t.d,t.h)+'<p class="cap">Known for</p><div class="tags">'+x.v.map(function(v){return '<span class="tag">'+v+'</span>'}).join("")+'</div>'+
+  '<a class="dir" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination='+x.la+','+x.lo+'">Get directions</a></div></div>'}).join("")||'<p class="empty">No bars match this filter.</p>';
+}
+function pick(e){
+ var c=e.target.closest("[data-c]"),w=e.target.closest("[data-w]"),b=e.target.closest(".bar>button"),p=e.target.closest(".pin");
+ if(c)filter=c.dataset.c;else if(w)tw=w.dataset.w;else if(b){var i=+b.dataset.id;open=open===i?null:i}else if(p)open=+p.dataset.id;else return;
+ render();if(p){var el=document.querySelector(".bar.open");if(el)el.scrollIntoView({behavior:"smooth",block:"center"})}
+}
+document.addEventListener("click",pick);
+document.addEventListener("keydown",function(e){if((e.key==="Enter"||e.key===" ")&&e.target.classList&&e.target.classList.contains("pin")){e.preventDefault();pick(e)}});
+try{navigator.geolocation.getCurrentPosition(function(p){var a=p.coords.latitude,o=p.coords.longitude;if(Math.abs(a-39.96)<.05&&Math.abs(o+75.605)<.05){me={la:a,lo:o,real:true};render()}},function(){},{timeout:4000})}catch(e){}
+var map=L.map("map").setView([me.la,me.lo],16),layer=L.layerGroup().addTo(map);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"&copy; OpenStreetMap contributors"}).addTo(map);
+function load(){return fetch("/api/busyness").then(function(r){return r.json()}).then(function(j){api=j.venues||{};src=j.source;render()}).catch(function(){})}
+fetch("/api/bars").then(function(r){return r.json()}).then(function(b){bars=b;render();load();setInterval(load,300000)});
+</script>
+</body>
+</html>
