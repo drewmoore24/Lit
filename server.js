@@ -2,7 +2,7 @@
 const http = require("http"), fs = require("fs"), path = require("path");
 const KEY = process.env.BESTTIME_KEY, PORT = process.env.PORT || 3000;
 const bars = JSON.parse(fs.readFileSync(path.join(__dirname, "bars.json")));
-const page = () => fs.readFileSync(path.join(__dirname, "index.html"));
+const page = () => fs.readFileSync([path.join(__dirname, "public", "index.html"), path.join(__dirname, "index.html")].find(fs.existsSync));
 const cache = new Map(), TTL = 5 * 60 * 1000; // BestTime calls cost credits, so cache
 
 async function busyness(bar) {
